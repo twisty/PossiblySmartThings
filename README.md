@@ -2,7 +2,7 @@
 
 ## [Outside light](https://github.com/twisty/PossiblySmartThings/blob/master/smartapps/twisty/outside-light.src/)
 
-A SmartApp that temporarily switches things on (like light bulbs) when any specified presence sensor arrives.
+This SmartApp temporarily switches things on (like light bulbs) when any specified presence sensor arrives.
 
 If a bulb was already on, it's brightness is set to 100%.
 
