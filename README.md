@@ -6,4 +6,4 @@ This SmartApp temporarily switches things on (like light bulbs) when any specifi
 
 If a bulb was already on, it's brightness is set to 100%.
 
-Then, after a configuarable number of minutes, the switches / lights are restored to the state they were in before this SmartApp turned them on.
+Then, after a configuarable number of minutes, the switches / lights are restored to the state they were in before they were turned on by this SmartApp.
