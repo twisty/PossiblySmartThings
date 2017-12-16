@@ -4,7 +4,7 @@
 
 This SmartApp temporarily switches things on (like light bulbs) when any specified presence sensor arrives.
 
-If a bulb was already on, it's brightness is set to 100%.
+If a bulb is already on, we set it's brightness to 100%.
 
 Then, after a configuarable number of minutes, the switches / lights are restored to the state they were in before they were turned on by this SmartApp.
 
@@ -12,6 +12,6 @@ Then, after a configuarable number of minutes, the switches / lights are restore
 
 This SmartApp temporarily switches things on (like light bulbs) when motion is sensed.
 
-If a bulb was already on, it's brightness is set to 100%.
+If a bulb is already on, we set it's brightness to 100%.
 
-When motion stops, and after a configuarable number of minutes, the switches / lights are restored to the state they were in before they were turned on by this SmartApp.
+When the motion stops, we wait for a configuarable number of minutes, then restore the switches / lights to the state they were in before they were turned on by this SmartApp.
