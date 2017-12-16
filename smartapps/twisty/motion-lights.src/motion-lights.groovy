@@ -9,13 +9,13 @@ definition(
     category: "Convenience",
     iconUrl: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png",
     iconX2Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@2x.png",
-    iconX3Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@2x.png"
+    iconX4Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@2x.png"
 )
 
 preferences {
-	section("When motion is detected...") {
+    section("When motion is detected...") {
         input "motion", "capability.motionSensor", title: "Motion sensor:"
-	}
+    }
     section("These devices are switched on...") {
         input "switches", "capability.switch", title: "Choose switches or lights:", multiple: true
     }
@@ -25,18 +25,18 @@ preferences {
 }
 
 def installed() {
-	log.debug "Installed with settings: ${settings}"
-	initialize()
+    log.debug "Installed with settings: ${settings}"
+    initialize()
 }
 
 def updated() {
-	log.debug "Updated with settings: ${settings}"
-	unsubscribe()
-	initialize()
+    log.debug "Updated with settings: ${settings}"
+    unsubscribe()
+    initialize()
 }
 
 def initialize() {
-	captureSwitchStatus()
+    captureSwitchStatus()
     state.isTurnedOn = false
     subscribe(switches, "switch", switchActivityHandler)
     subscribe(motion, "motion.active", motionActiveHandler)
@@ -44,7 +44,7 @@ def initialize() {
 }
 
 def captureSwitchStatus() {
-	log.debug "== captureSwitchStatus =="
+    log.debug "== captureSwitchStatus =="
     def switchTouched = [:]
     def switchStates = [:]
     def switchLevels = [:]
@@ -62,7 +62,7 @@ def captureSwitchStatus() {
 }
 
 def motionActiveHandler(evt) {
-	log.debug "== motionActiveHandler =="
+    log.debug "== motionActiveHandler =="
     if (state.isTurnedOn == false) {
         state.isTurnedOn = true
         captureSwitchStatus()
@@ -73,7 +73,7 @@ def motionActiveHandler(evt) {
 }
 
 def motionInactiveHandler(evt) {
-	log.debug "== motionInactiveHandler =="
+    log.debug "== motionInactiveHandler =="
     if (state.isTurnedOn == true) {
         def delay = getDelay()
         log.info "Restoring switches in ${minutesLater} minutes (${delay} seconds)"
@@ -82,25 +82,25 @@ def motionInactiveHandler(evt) {
 }
 
 def switchActivityHandler(evt) {
-	log.debug "== switchActivityHandler =="
+    log.debug "== switchActivityHandler =="
     if (state.isTurnedOn == true) {
-	    def id = evt.device.getId()
-	  	if (state.switchTouched[id] == false) {
-        	// @TODO: Also monitor changes to the switch level, and flagging not to restore if changed from 100.
-        	if (evt.device.currentSwitch == "off") {
-    			log.info "Switch was turned off but not by us. Flagging that we shouldn't restore this switch."
-    			state.switchTouched[id] = true
+        def id = evt.device.getId()
+        if (state.switchTouched[id] == false) {
+            // @TODO: Also monitor changes to the switch level, and flagging not to restore if changed from 100.
+            if (evt.device.currentSwitch == "off") {
+                log.info "Switch was turned off but not by us. Flagging that we shouldn't restore this switch."
+                state.switchTouched[id] = true
             }
-    	}
+        }
     }
 }
 
 def getDelay() {
-	minutesLater * 60
+    minutesLater * 60
 }
 
 def switchOn() {
-	log.debug "== switchOn =="
+    log.debug "== switchOn =="
     for (device in switches) {
         device.on()
         if (device.hasCapability("Switch Level")) {
@@ -114,9 +114,9 @@ def switchOn() {
 def restoreSwitches() {
     log.debug "== restoreSwitches =="
     if (state.isTurnedOn == true) {
-    	def motionIsActive = (motion.currentMotion == "active")
-    	if (motionIsActive) {
-        	log.warn "Motion sensor is currently active, but timeout for restoring switches has been called. Skipping restore."
+        def motionIsActive = (motion.currentMotion == "active")
+        if (motionIsActive) {
+            log.warn "Motion sensor is currently active, but timeout for restoring switches has been called. Skipping restore."
         } else {
             for (device in switches) {
                 restoreSwitch(device)
@@ -128,7 +128,7 @@ def restoreSwitches() {
 
 def restoreSwitch(device) {
     log.debug "== restoreSwitch =="
-	def key = device.getId()
+    def key = device.getId()
     if (state.switchTouched[key] == false) {
         def thisSwitchInitialState = state.initialSwitchStates[key]
         if (thisSwitchInitialState == "on") {
@@ -140,7 +140,7 @@ def restoreSwitch(device) {
             }
         } else {
             log.info "Turning switch off. ${device}"
-            device.off()
+                device.off()
         }
     } else {
         log.warn "Switch has been interacted with, skipping restore."
