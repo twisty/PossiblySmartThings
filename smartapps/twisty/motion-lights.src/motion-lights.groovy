@@ -88,7 +88,7 @@ def switchActivityHandler(evt) {
         if (state.switchTouched[id] == false) {
             // @TODO: Also monitor changes to the switch level, and flagging not to restore if changed from 100.
             if (evt.device.currentSwitch == "off") {
-                log.info "Switch was turned off but not by us. Flagging that we shouldn't restore this switch."
+                log.info "Switch was turned off since turning on by by us. Flagging that we shouldn't restore this switch."
                 state.switchTouched[id] = true
             }
         }
