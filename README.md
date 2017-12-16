@@ -2,7 +2,7 @@
 
 ## [Arrival lights](https://github.com/twisty/PossiblySmartThings/blob/master/smartapps/twisty/arrival-lights.src/)
 
-This SmartApp temporarily switches things on (like light bulbs) when any specified presence sensor arrives.
+This SmartApp temporarily switches things on (like light bulbs) when a presence sensor arrives.
 
 If a light is already on, we turn the brightness up to 100%.
 
