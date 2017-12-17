@@ -12,6 +12,6 @@ Then, after a configuarable number of minutes, the switches / lights are restore
 
 This SmartApp temporarily switches things on (like light bulbs) when a motion sensor is triggered.
 
-If a light is already on, we turn the brightness up to 100%.
+If a light is already on, we increase the brightness a little.
 
 When the motion stops, we wait for a configurable number of minutes, then restore the switches / lights to the state they were in before they were turned on by this SmartApp.
