@@ -104,7 +104,13 @@ def switchOn() {
     for (device in switches) {
         device.on()
         if (device.hasCapability("Switch Level")) {
+        	def key = device.getId()
+            def thisSwitchInitialLevel = state.initialSwitchLevels[key]
             def level = 100
+            if (thisSwitchInitialLevel) {
+            	level = Math.round(thisSwitchInitialLevel * 1.5)
+                level = Math.min(level, 100)
+            }
             log.info "Setting level to: ${level}"
             device.setLevel(level)
         }
