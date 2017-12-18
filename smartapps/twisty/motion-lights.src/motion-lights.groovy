@@ -63,7 +63,7 @@ def captureSwitchStatus() {
 
 def motionActiveHandler(evt) {
     log.debug "== motionActiveHandler =="
-    if (state.isTurnedOn == false) {
+    if ((state.isTurnedOn == false) && isDark()) {
         state.isTurnedOn = true
         captureSwitchStatus()
         switchOn();
@@ -97,6 +97,13 @@ def switchActivityHandler(evt) {
 
 def getDelay() {
     minutesLater * 60
+}
+
+def isDark() {
+	def darkTimes = getSunriseAndSunset(sunsetOffset: "-00:30", sunriseOffset: "+00:30")
+    def now = new Date()
+    def isLight = now.before(darkTimes.sunset) && now.after(darkTimes.sunrise)
+    !isLight
 }
 
 def switchOn() {
