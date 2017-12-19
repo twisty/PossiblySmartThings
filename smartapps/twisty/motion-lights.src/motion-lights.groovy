@@ -63,12 +63,16 @@ def captureSwitchStatus() {
 
 def motionActiveHandler(evt) {
     log.debug "== motionActiveHandler =="
-    if ((state.isTurnedOn == false) && isDark()) {
-        state.isTurnedOn = true
-        captureSwitchStatus()
-        switchOn();
+    if (isLight()) {
+        log.warn "Not triggering switches: it is light at the moment."
     } else {
-        log.warn "Motion detected, but we have already triggered switches."
+        if (state.isTurnedOn == false) {
+            state.isTurnedOn = true
+            captureSwitchStatus()
+            switchOn();
+        } else {
+            log.warn "Not triggering switches: already triggered."
+        }
     }
 }
 
@@ -99,11 +103,10 @@ def getDelay() {
     minutesLater * 60
 }
 
-def isDark() {
-	def darkTimes = getSunriseAndSunset(sunsetOffset: "-00:30", sunriseOffset: "+00:30")
+def isLight() {
+    def sunTimes = getSunriseAndSunset(sunsetOffset: "-00:30", sunriseOffset: "+00:30")
     def now = new Date()
-    def isLight = now.before(darkTimes.sunset) && now.after(darkTimes.sunrise)
-    !isLight
+    now.before(sunTimes.sunset) && now.after(sunTimes.sunrise)
 }
 
 def switchOn() {
@@ -111,15 +114,15 @@ def switchOn() {
     for (device in switches) {
         device.on()
         if (device.hasCapability("Switch Level")) {
-        	def key = device.getId()
+            def key = device.getId()
             def thisSwitchInitialLevel = state.initialSwitchLevels[key]
             def level = 100
             if (thisSwitchInitialLevel) {
-            	level = Math.round(thisSwitchInitialLevel * 1.5)
+                level = Math.round(thisSwitchInitialLevel * 1.5)
                 level = Math.min(level, 100)
             }
-            log.info "Setting level to: ${level}"
-            device.setLevel(level)
+            log.info "Setting level to: ${level as Integer}"
+            device.setLevel(level as Integer)
         }
     }
 }
@@ -153,7 +156,7 @@ def restoreSwitch(device) {
             }
         } else {
             log.info "Turning switch off. ${device}"
-                device.off()
+            device.off()
         }
     } else {
         log.warn "Switch has been interacted with, skipping restore."
