@@ -36,16 +36,16 @@ def updated() {
 }
 
 def initialize() {
-    captureSwitchStatus()
+    captureSwitchState()
+    resetTouchedState()
     state.isTurnedOn = false
     subscribe(switches, "switch", switchActivityHandler)
     subscribe(motion, "motion.active", motionActiveHandler)
     subscribe(motion, "motion.inactive", motionInactiveHandler)
 }
 
-def captureSwitchStatus() {
-    log.debug "== captureSwitchStatus =="
-    def switchTouched = [:]
+def captureSwitchState() {
+    log.debug "== captureSwitchState =="
     def switchStates = [:]
     def switchLevels = [:]
     for (device in switches) {
@@ -54,10 +54,17 @@ def captureSwitchStatus() {
             switchLevels[key] = device.currentValue("level")
         }
         switchStates[key] = device.currentValue("switch")
-        switchTouched[key] = false
     }
     state.initialSwitchStates = switchStates
     state.initialSwitchLevels = switchLevels
+}
+
+def resetTouchedState() {
+    def switchTouched = [:]
+    for (device in switches) {
+        def key = device.getId()
+        switchTouched[key] = false
+    }
     state.switchTouched = switchTouched
 }
 
@@ -68,7 +75,8 @@ def motionActiveHandler(evt) {
     } else {
         if (state.isTurnedOn == false) {
             state.isTurnedOn = true
-            captureSwitchStatus()
+            captureSwitchState()
+            resetTouchedState()
             switchOn();
         } else {
             log.warn "Not triggering switches: already triggered."
@@ -138,6 +146,7 @@ def restoreSwitches() {
                 restoreSwitch(device)
             }
             state.isTurnedOn = false
+            resetTouchedState()
         }
     }
 }
