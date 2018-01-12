@@ -40,6 +40,7 @@ def initialize() {
     resetTouchedState()
     state.isTurnedOn = false
     subscribe(switches, "switch", switchActivityHandler)
+    subscribe(switches, "level", switchActivityHandler)
     subscribe(motion, "motion.active", motionActiveHandler)
     subscribe(motion, "motion.inactive", motionInactiveHandler)
 }
@@ -98,9 +99,15 @@ def switchActivityHandler(evt) {
     if (state.isTurnedOn == true) {
         def id = evt.device.getId()
         if (state.switchTouched[id] == false) {
-            // @TODO: Also monitor changes to the switch level, and flagging not to restore if changed from 100.
+           if (state.initialSwitchLevels[id]) {
+                def adjustedLevel = getLevelAdjustment(state.initialSwitchLevels[id])
+                if (evt.device.currentLevel != adjustedLevel) {
+                    log.info "Level was changed with since setting by us. Flagging that we shouldn't restore this switch."
+                    state.switchTouched[id] = true
+                }
+            }
             if (evt.device.currentSwitch == "off") {
-                log.info "Switch was turned off since turning on by by us. Flagging that we shouldn't restore this switch."
+                log.info "Switch was turned off since turning on by us. Flagging that we shouldn't restore this switch."
                 state.switchTouched[id] = true
             }
         }
@@ -126,13 +133,18 @@ def switchOn() {
             def thisSwitchInitialLevel = state.initialSwitchLevels[key]
             def level = 100
             if (thisSwitchInitialLevel) {
-                level = Math.round(thisSwitchInitialLevel * 1.5)
-                level = Math.min(level, 100)
+                level = getLevelAdjustment(thisSwitchInitialLevel)
             }
-            log.info "Setting level to: ${level as Integer}"
-            device.setLevel(level as Integer)
+            log.info "Setting level to: ${level}"
+            device.setLevel(level)
         }
     }
+}
+
+def getLevelAdjustment(initialLevel) {
+    def level = Math.round(initialLevel * 1.5)
+    level = Math.min(level, 100)
+    level as Integer
 }
 
 def restoreSwitches() {
